@@ -19,29 +19,12 @@ pub fn bubblesort<T: PartialOrd>(elements: &mut [T]) {
 
 #[cfg(test)]
 mod tests {
-    use crate::sorting::test_helpers::{is_stabelly_sorted, random_comparable_list};
+    use crate::sorting::test_helpers::{is_stabelly_sorted, random_comparable_list, self};
 
     use super::bubblesort;
 
-    // the following tests are just to check for crashes or endless loops
+    test_helpers::basic_sorting_tests!(bubblesort);
 
-    #[test]
-    fn it_sorts_empty_slices() {
-        let mut data: [i32; 0] = [];
-        bubblesort(&mut data);
-    }
-
-    #[test]
-    fn it_sorts_one_element_slices() {
-        let mut data = [1];
-        bubblesort(&mut data);
-    }
-
-    #[test]
-    fn it_sorts_element_slices_of_same_elements() {
-        let mut data = [1, 1, 1, 1, 1, 1, 1];
-        bubblesort(&mut data);
-    }
 
     // Now we will actually start looking if this thing works
     #[test]
