@@ -70,29 +70,42 @@ pub fn is_sorted<T: PartialOrd, I: Iterator<Item = T>>(mut items: I) -> bool {
     return true;
 }
 
-pub fn test_basic_sort_functions<F: Fn(&mut [i32]) -> ()>(fun: &F) {
-    it_sorts_empty_slices(&fun);
-    it_sorts_one_element_slices(&fun);
-    it_sorts_element_slices_of_same_elements(&fun);
+// pub fn test_basic_sort_functions<F: Fn(&mut [i32]) -> ()>(fun: &F) {
+//     it_sorts_empty_slices(&fun);
+//     it_sorts_one_element_slices(&fun);
+//     it_sorts_element_slices_of_same_elements(&fun);
+// }
+
+macro_rules! basic_sorting_tests {
+    ($fnname: ident) => {
+        #[test]
+        fn it_sorts_empty_slices() {
+            let mut data: [i32; 0] = [];
+            $fnname(&mut data);
+        }
+
+        #[test]
+        fn it_sorts_one_element_slices() {
+            let mut data = [1];
+            $fnname(&mut data);
+        }
+
+        #[test]
+        fn it_sorts_element_slices_of_same_elements() {
+            let mut data = [1, 1, 1, 1, 1, 1, 1];
+            $fnname(&mut data);
+        }
+    };
 }
 
+pub(crate) use basic_sorting_tests;
 
-fn it_sorts_empty_slices<F: Fn(&mut [i32]) -> ()>(fun: &F) {
-    let mut data: [i32; 0] = [];
-    fun(&mut data);
-}
-
-fn it_sorts_one_element_slices<F: Fn(&mut [i32]) -> ()>(fun: &F) {
-    let mut data = [1];
-    fun(&mut data);
-}
-
-fn it_sorts_element_slices_of_same_elements<F: Fn(&mut [i32]) -> ()>(fun: &F) {
-    let mut data = [1, 1, 1, 1, 1, 1, 1];
-    fun(&mut data);
-}
-
-pub fn test_unstable_sort<F: Fn(&mut [i32]) -> ()>(fun: &F, num_elements: usize, min: i32, max: i32) {
+pub fn test_unstable_sort<F: Fn(&mut [i32]) -> ()>(
+    fun: &F,
+    num_elements: usize,
+    min: i32,
+    max: i32,
+) {
     let generator = rand::thread_rng();
     let mut items: Vec<_> = generator
         .sample_iter(rand::distributions::Uniform::new(min, max))

@@ -36,6 +36,9 @@ fn partition<T: PartialOrd + Clone>(elements: &mut [T]) -> (usize, usize) {
         unsafe { swap_elements_unsafe(elements, left_index, right_index) }
     }
 
+    // find the two indexes of elements where the pivots begin and end 
+    // when there are multiple copies of the pivot
+
     while left_index > 0  {
         left_index -=1;
         if elements[left_index] != pivot {
@@ -61,13 +64,10 @@ unsafe fn swap_elements_unsafe<T: PartialOrd>(elements: &mut [T], index1: usize,
 
 #[cfg(test)]
 mod tests {
-    use crate::sorting::test_helpers::{is_sorted, test_basic_sort_functions, test_unstable_sort};
+    use crate::sorting::test_helpers::{is_sorted, test_unstable_sort, self};
 
     use super::quicksort;
-    #[test]
-    fn test_basic_quicksort_sort() {
-        test_basic_sort_functions(&quicksort);
-    }
+    test_helpers::basic_sorting_tests!(quicksort);
 
     #[test]
     fn test_quicksort_with_two_items() {
