@@ -30,7 +30,7 @@ pub fn random_comparable_list(len: usize, min: i64, max: i64) -> Vec<StableSortC
     let mut result = Vec::new();
     result.reserve(len);
     let mut generator = rand::thread_rng();
-    
+
     for i in 0..len {
         result.push(StableSortComparableItem {
             value: generator.gen_range(min..=max),
@@ -53,4 +53,52 @@ pub fn is_stabelly_sorted(items: &[StableSortComparableItem]) -> bool {
         }
     }
     return true;
+}
+
+pub fn is_sorted<T: PartialOrd, I: Iterator<Item = T>>(mut items: I) -> bool {
+    let last = items.next();
+    if last.is_none() {
+        return true;
+    }
+
+    let last = last.unwrap();
+    while let Some(item) = items.next() {
+        if last > item {
+            return false;
+        }
+    }
+    return true;
+}
+
+pub fn test_basic_sort_functions<F: Fn(&mut [i32]) -> ()>(fun: &F) {
+    it_sorts_empty_slices(&fun);
+    it_sorts_one_element_slices(&fun);
+    it_sorts_element_slices_of_same_elements(&fun);
+}
+
+
+fn it_sorts_empty_slices<F: Fn(&mut [i32]) -> ()>(fun: &F) {
+    let mut data: [i32; 0] = [];
+    fun(&mut data);
+}
+
+fn it_sorts_one_element_slices<F: Fn(&mut [i32]) -> ()>(fun: &F) {
+    let mut data = [1];
+    fun(&mut data);
+}
+
+fn it_sorts_element_slices_of_same_elements<F: Fn(&mut [i32]) -> ()>(fun: &F) {
+    let mut data = [1, 1, 1, 1, 1, 1, 1];
+    fun(&mut data);
+}
+
+pub fn test_unstable_sort<F: Fn(&mut [i32]) -> ()>(fun: &F, num_elements: usize, min: i32, max: i32) {
+    let generator = rand::thread_rng();
+    let mut items: Vec<_> = generator
+        .sample_iter(rand::distributions::Uniform::new(min, max))
+        .take(num_elements)
+        .collect();
+
+    fun(&mut items);
+    assert!(is_sorted(items.iter()));
 }

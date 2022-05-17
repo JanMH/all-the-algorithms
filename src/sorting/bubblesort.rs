@@ -1,4 +1,4 @@
-pub fn bubble_sort<T: PartialOrd>(elements: &mut [T]) {
+pub fn bubblesort<T: PartialOrd>(elements: &mut [T]) {
     if elements.len() <= 1 {
         return;
     }
@@ -21,33 +21,33 @@ pub fn bubble_sort<T: PartialOrd>(elements: &mut [T]) {
 mod tests {
     use crate::sorting::test_helpers::{is_stabelly_sorted, random_comparable_list};
 
-    use super::bubble_sort;
+    use super::bubblesort;
 
     // the following tests are just to check for crashes or endless loops
 
     #[test]
     fn it_sorts_empty_slices() {
         let mut data: [i32; 0] = [];
-        bubble_sort(&mut data);
+        bubblesort(&mut data);
     }
 
     #[test]
     fn it_sorts_one_element_slices() {
         let mut data = [1];
-        bubble_sort(&mut data);
+        bubblesort(&mut data);
     }
 
     #[test]
     fn it_sorts_element_slices_of_same_elements() {
         let mut data = [1, 1, 1, 1, 1, 1, 1];
-        bubble_sort(&mut data);
+        bubblesort(&mut data);
     }
 
     // Now we will actually start looking if this thing works
     #[test]
     fn it_sorts_element_slices_of_different_elements() {
         let mut data = random_comparable_list(25, 0, 10);
-        bubble_sort(&mut data);
+        bubblesort(&mut data);
         assert!(is_stabelly_sorted(&data));
     }
 }
