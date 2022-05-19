@@ -7,12 +7,13 @@ pub fn brents_cycle_detection<T: PartialEq, F: Fn(&T) -> T>(f: &F, x0: T) -> (us
         return (1, 0);
     }
 
-    let mut power = 1;
+    // initialize the values as if we had already run the loop once
+    let mut power = 2;
     let mut lambda = 1;
-    let mut hare = f(&x0);
-    // because of the check we did above we can initialize this to any value
+    let mut hare = f(&f(&x0));
     let mut tortoise = f(&x0);
-    loop {
+
+    while tortoise != hare {
         if power == lambda {
             tortoise = hare;
             power *= 2;
@@ -22,9 +23,7 @@ pub fn brents_cycle_detection<T: PartialEq, F: Fn(&T) -> T>(f: &F, x0: T) -> (us
             hare = f(&hare);
             lambda += 1;
         }
-        if tortoise == hare {
-            break;
-        }
+        
     }
 
     let mut tortoise = x0;
@@ -108,6 +107,7 @@ mod test {
         for lambda in 1..20 {
             for mu in 0..20 {
                 let hashvalues = gen_test_hash(mu, lambda);
+                println!("{:?}", &hashvalues);
                 let fun = hash_map_to_cyclic_function(hashvalues);
                 assert_eq!(brents_cycle_detection(&fun, Some(1)), (lambda, mu));
             }
