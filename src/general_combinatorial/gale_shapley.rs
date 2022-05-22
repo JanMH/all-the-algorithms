@@ -38,9 +38,6 @@ pub fn gale_shapley(
         }
     }
 
-    println!("{:?}", matched_a);
-    println!("{:?}", matched_b);
-
     let result = matched_a
         .iter()
         .zip(0..)
