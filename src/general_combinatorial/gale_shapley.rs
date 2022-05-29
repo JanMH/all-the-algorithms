@@ -48,8 +48,8 @@ pub fn gale_shapley(
 
 fn replace_match(
     free_a: &mut Vec<usize>,
-    matched_a: &mut Vec<Option<usize>>,
-    matched_b: &mut Vec<Option<usize>>,
+    matched_a: &mut [Option<usize>],
+    matched_b: &mut [Option<usize>],
     index_a: usize,
     next_match: usize,
 ) {
