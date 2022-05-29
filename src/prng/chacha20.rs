@@ -9,6 +9,16 @@ pub struct ChaChaGenerator<const ROUNDS: usize = 20> {
 }
 
 impl<const ROUNDS: usize> ChaChaGenerator<ROUNDS> {
+    /// Constructs the ChaChaGenerator by reading bytes from the random device
+    pub fn from_system() -> std::io::Result<ChaChaGenerator> {
+        let mut key = [0; 32];
+        let mut nonce = [0; 12];
+        super::get_system_random_bytes(&mut key)?;
+        super::get_system_random_bytes(&mut nonce)?;
+
+        Ok(ChaChaGenerator::from_key(key, nonce))
+    }
+
     pub fn from_key(key: [u8; 32], nonce: [u8; 12]) -> ChaChaGenerator<ROUNDS> {
         ChaChaGenerator::<ROUNDS> {
             random_bytes: [0; 64],
@@ -41,8 +51,6 @@ impl<const ROUNDS: usize> ChaChaGenerator<ROUNDS> {
     }
 }
 
-
-
 impl<const ROUNDS: usize> PrnGenerator for ChaChaGenerator<ROUNDS> {
     fn next_byte(&mut self) -> u8 {
         if self.next_random_byte >= 64 {
@@ -55,7 +63,6 @@ impl<const ROUNDS: usize> PrnGenerator for ChaChaGenerator<ROUNDS> {
         result
     }
 }
-
 
 fn init_state(key: &[u8; 32], counter: u32, nonce: &[u8; 12]) -> [u32; 16] {
     let mut state: [u32; 16] = [0; 16];
@@ -165,16 +172,20 @@ mod test {
     #[test]
     fn test_rfc7539_example_2_3_2() {
         let mut generator = ChaChaGenerator::<20>::from_key(KEY.clone(), NONCE.clone());
-        let mut result: [u8; 64]  = [0;64];
+        let mut result: [u8; 64] = [0; 64];
         for i in 0..64 {
             result[i] = generator.next_byte();
-
         }
         let expected = [
             0xe4e7f110, 0x15593bd1, 0x1fdd0f50, 0xc47120a3, 0xc7f4d1c7, 0x0368c033, 0x9aaa2204,
             0x4e6cd4c3, 0x466482d2, 0x09aa9f07, 0x05d7c214, 0xa2028bd9, 0xd19c12b5, 0xb94e16de,
             0xe883d0cb, 0x4e3c50a2,
         ];
-        assert_eq!(unsafe{std::mem::transmute::<[u8;64],[u32;16]>(result)}, expected);
+        assert_eq!(
+            unsafe { std::mem::transmute::<[u8; 64], [u32; 16]>(result) },
+            expected
+        );
     }
+
+    
 }
